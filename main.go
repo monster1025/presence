@@ -389,6 +389,7 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 			http_results_lock.Lock()
 			http_results.Beacons = append(http_results.Beacons, r)
 			http_results_lock.Unlock()
+			sendHARoomMessage(beacon.Beacon_id, beacon.Name, 0, "", cl)
 			continue
 		}
 
