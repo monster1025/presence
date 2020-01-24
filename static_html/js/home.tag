@@ -9,6 +9,7 @@
 			<th>Beacon Name</th>
 			<th>Current Location</th>
 			<th>Last seen</th>
+			<th>Enabled</th>
 			<th>Edit</th>
 			<th>Delete</th>
 		</tr>
@@ -16,7 +17,8 @@
 			<td class="{ class }">{ name }</td>
 			<td class="{ class }">{ location }</td>
 			<td class="{ class }">{ last_seen_string }</td> 
-			<td><a href="#edit-beacon/{ beacon_id }/{ url_name }"><i class="material-icons text-blue">edit</i></a></td>
+			<td class="{ class }">{ beacon_enabled }</td> 
+			<td><a href="#edit-beacon/{ beacon_id }/{ url_name }/{ beacon_enabled_str }"><i class="material-icons text-blue">edit</i></a></td>
 			<td><a onclick={ delete_beacon } beacon_name="{ beacon_name }" beacon_id="{ beacon_id }" href=""><i class="material-icons red-text">delete</i></a></td>
     </tr>
   </table>
@@ -39,7 +41,7 @@
 			<td class="{ class }">{ last_seen_string }</td> 
 			<td class="{ class } tooltipped" data-position="top" data-delay="20" data-tooltip="{ hb_button_battery } V">{ hb_button_battery_percent }</td> 
 			<td class="{ class }">{ hb_button_mode }</td> 
-			<td><a href="#edit-beacon/{ button_id }/{ url_name }"><i class="material-icons text-blue">edit</i></a></td>
+			<td><a href="#edit-beacon/{ button_id }/{ url_name }/{ beacon_enabled_str }"><i class="material-icons text-blue">edit</i></a></td>
 			<td><a onclick={ delete_button } beacon_name="{ name }" beacon_id="{ button_id }" href=""><i class="material-icons red-text">delete</i></a></td>
     </tr>
   </table>
@@ -88,6 +90,7 @@
 								v.class = "grey-text text-darken-1"
 							}
 							v["url_name"] = encodeURIComponent(v.name);
+							v["beacon_enabled_str"] = v.beacon_enabled ? "true" : "false";
 							bs.push(v);
 						}
 			});

@@ -97,12 +97,13 @@
 			})
 		});
 
-		riot.route('/edit-beacon/*/*', function(beacon_id, beacon_name) {
-			$('.button-collapse').sideNav('hide');
-    	riot.mount('#current_mount', 'add-beacon', {
-      	title: 'Edit Beacon',
-      	beacon_id: beacon_id,
-      	beacon_name: beacon_name,
+		riot.route('/edit-beacon/*/*/*', function(beacon_id, beacon_name, beacon_enabled) {
+		  $('.button-collapse').sideNav('hide');
+    	    riot.mount('#current_mount', 'add-beacon', {
+      	      title: 'Edit Beacon',
+      	      beacon_id: beacon_id,
+		      beacon_name: beacon_name,
+		      beacon_enabled: beacon_enabled,
 			})
 		});
 		$(".button-collapse").sideNav();

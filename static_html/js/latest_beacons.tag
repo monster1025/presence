@@ -30,6 +30,7 @@
   <table>
 			<tr>
 				<th>Beacon ID</th>
+				<th>Name</th>
 				<th>Beacon Location</th>
 				<th>Beacon type</th>
 				<th>Last seen</th>

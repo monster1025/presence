@@ -47,6 +47,12 @@
         </div>
       </div>
       <div class="row">
+        <div class="input-field col s12">
+          <input checked="{opts.debug}" id="debug" type="checkbox">
+          <label for="debug" class="active">Write console debug log</label>
+        </div>
+      </div>
+      <div class="row">
 				<button class="btn waves-effect waves-light" type="submit" name="action">Submit
 		  		<i class="material-icons right">send</i>
 		   </button>
@@ -87,7 +93,9 @@
 				if(data.enforce_rssi_threshold) {
 					$("#enforce_rssi_threshold").prop("checked", data.enforce_rssi_threshold);
                 }
-
+				if(data.debug) {
+					$("#debug").prop("checked", data.debug);
+                }
                 $("#enforce_rssi_threshold").trigger("change");
             });
 
@@ -106,6 +114,7 @@
 				form_data["ha_send_interval"] = parseInt($("#ha_send_interval").val());
 				form_data["ha_send_changes_only"] = $("#ha_send_changes_only").prop("checked");
 				form_data["enforce_rssi_threshold"] = $("#enforce_rssi_threshold").prop("checked");
+				form_data["debug"] = $("#debug").prop("checked");
 				//console.log(form_data);
 				$.ajax(
 				{

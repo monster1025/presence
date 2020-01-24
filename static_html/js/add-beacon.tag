@@ -16,6 +16,12 @@
         </div>
       </div>
       <div class="row">
+        <div class="input-field col s12">
+          <input id="beacon_enabled" value="{opts.beacon_enabled}" minlength=1 type="checkbox" class="validate">
+          <label for="beacon_enabled" class="active" data-error="wrong" data-success="ok">Enabled</label>
+        </div>
+      </div>
+      <div class="row">
 				<button class="btn waves-effect waves-light" type="submit" name="action">Submit
 		  		<i class="material-icons right">send</i>
 		   </button> 
@@ -25,11 +31,17 @@
 
 	<script>
 		this.on('mount', function(){
+			console.log(opts);
+			console.log(opts.beacon_enabled);
+			if(opts.beacon_enabled == "true") {
+				$("#beacon_enabled").prop("checked", true);
+			}
 			$("#beacon-form").submit(function(event){
 				event.preventDefault();
 				var form_data = {}
 				form_data["beacon_id"] = $("#beacon_id").val();
 				form_data["name"] = $("#beacon_name").val();
+				form_data["beacon_enabled"] = $("#beacon_enabled").prop("checked");
 				//console.log(form_data);
 				$.ajax(
 				{

@@ -1,16 +1,13 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/json"
 	"log"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/boltdb/bolt"
-
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
@@ -49,7 +46,7 @@ func startServer() {
 	http.Handle("/", r)
 	http.HandleFunc("/api/beacons/ws", serveWs)
 	http.HandleFunc("/api/beacons/latest/ws", serveLatestBeaconsWs)
-	log.Fatal(http.ListenAndServe(*http_host_path_ptr, nil))
+	logrus.Fatal(http.ListenAndServe(*http_host_path_ptr, nil))
 }
 
 func resultsHandler(w http.ResponseWriter, r *http.Request) {
@@ -76,81 +73,6 @@ func beaconsListHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-func persistBeacons() error {
-	// gob it first
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(BEACONS); err != nil {
-		return err
-	}
-
-	key := []byte("beacons_list")
-	// store some data
-	err = db.Update(func(tx *bolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists(world)
-		if err != nil {
-			return err
-		}
-
-		err = bucket.Put(key, []byte(buf.String()))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	return nil
-}
-
-func persistButtons() error {
-	// gob it first
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(Buttons_list); err != nil {
-		return err
-	}
-
-	key := []byte("buttons_list")
-	// store some data
-	err = db.Update(func(tx *bolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists(world)
-		if err != nil {
-			return err
-		}
-
-		err = bucket.Put(key, []byte(buf.String()))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	return nil
-}
-
-func persistSettings() error {
-	// gob it first
-	buf := &bytes.Buffer{}
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(settings); err != nil {
-		return err
-	}
-
-	key := []byte("settings")
-	// store some data
-	err = db.Update(func(tx *bolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists(world)
-		if err != nil {
-			return err
-		}
-
-		err = bucket.Put(key, []byte(buf.String()))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-	return nil
-}
-
 func beaconsAddHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var in_beacon Beacon
@@ -159,6 +81,7 @@ func beaconsAddHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
+	debugf("Saving beacon settings (%#v).", in_beacon)
 
 	//make sure name and beacon_id are present
 	if (len(strings.TrimSpace(in_beacon.Name)) == 0) || (len(strings.TrimSpace(in_beacon.Beacon_id)) == 0) {
