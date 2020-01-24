@@ -163,9 +163,9 @@
 
 			var c = data_rssi[data_rssi.length-1]
 			self.closest = {
-				"id": c.beacon_id, 
+				"id": c.beacon_id,
 				"rssi": c.incoming_json.rssi,
-				"location": c.beacon_location,
+				"beacon_location": c.beacon_location,
 			}
 
 			self.update();

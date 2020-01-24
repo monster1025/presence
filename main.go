@@ -108,7 +108,7 @@ func incomingBeaconFilter(incoming Incoming_json) Incoming_json {
 
 			out_json.Beacon_type = "hb_button"
 
-			debugf("Button adv has %#v\n", out_json)
+			//debugf("Button adv has %#v\n", out_json)
 		}
 	} //else if incoming.Beacon_type == "eddystone" && incoming.Namespace == "ddddeeeeeeffff5544ff" {
 	//out_json.Beacon_type = "hb_button"
@@ -263,7 +263,7 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 			}
 			loc_list[metric.location] = loc
 		}
-		debugf("beacon: %s list: %#v\n", beacon.Name, loc_list)
+		// debugf("beacon: %s list: %#v\n", beacon.Name, loc_list)
 		// now go through the list and find the largest, that's the location
 		best_name := ""
 		ts := 0.0
@@ -273,7 +273,7 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 				ts = times_seen
 			}
 		}
-		debugf("BEST LOCATION FOR %s IS: %s with score: %f\n", beacon.Name, best_name, ts)
+		//debugf("BEST LOCATION FOR %s IS: %s with score: %f\n", beacon.Name, best_name, ts)
 		best_location = Best_location{name: best_name, distance: beacon.beacon_metrics[len(beacon.beacon_metrics)-1].distance, last_seen: beacon.beacon_metrics[len(beacon.beacon_metrics)-1].timestamp}
 
 		//filter, only let this location become best if it was X times in a row
@@ -294,6 +294,7 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 		r.HB_ButtonMode = beacon.HB_ButtonMode
 		r.Location = best_location.name
 		r.Last_seen = best_location.last_seen
+		r.Beacon_Enabled = beacon.Beacon_Enabled
 
 		if beacon.Location_confidence == settings.Location_confidence && beacon.Previous_confident_location != best_location.name {
 			// location has changed, send an mqtt message
@@ -335,7 +336,7 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 		http_results.Beacons = append(http_results.Beacons, r)
 		http_results_lock.Unlock()
 
-		if best_location.name != "" {
+		if best_location.name != "" && beacon.Beacon_Enabled {
 			if !settings.HA_send_changes_only {
 				secs := int64(time.Now().Unix())
 				if secs%settings.HA_send_interval == 0 {
@@ -344,14 +345,14 @@ func getLikelyLocations(settings Settings, locations_list Locations_list, cl *cl
 			}
 		}
 
-		debugf("\n\n%s is most likely in %s with average distance %f \n\n", beacon.Name, best_location.name, best_location.distance)
+		// debugf("\n\n%s is most likely in %s with average distance %f \n\n", beacon.Name, best_location.name, best_location.distance)
 		// publish this to a topic
 		// Publish a message.
-		err := cl.Publish(&client.PublishOptions{
-			QoS:       mqtt.QoS0,
-			TopicName: []byte("happy-bubbles/presence"),
-			Message:   []byte(fmt.Sprintf("%s is most likely in %s with average distance %f", beacon.Name, best_location.name, best_location.distance)),
-		})
+		// err := cl.Publish(&client.PublishOptions{
+		// 	QoS:       mqtt.QoS0,
+		// 	TopicName: []byte("happy-bubbles/presence"),
+		// 	Message:   []byte(fmt.Sprintf("%s is most likely in %s with average distance %f", beacon.Name, best_location.name, best_location.distance)),
+		// })
 		if err != nil {
 			panic(err)
 		}
@@ -408,7 +409,7 @@ func IncomingMQTTProcessor(updateInterval time.Duration, cl *client.Client, db *
 
 					now := time.Now().Unix()
 
-					debug("saw " + this_beacon_id + " at " + incoming.Hostname)
+					//debug("saw " + this_beacon_id + " at " + incoming.Hostname)
 
 					//if this beacon isn't in our search list, add it to the latest_beacons pile.
 					beacon, ok := BEACONS.Beacons[this_beacon_id]
@@ -469,7 +470,7 @@ func IncomingMQTTProcessor(updateInterval time.Duration, cl *client.Client, db *
 						//debugf("deleting a metric from %s len %d\n", beacon.Name, len(beacon.beacon_metrics))
 						beacon.beacon_metrics = append(beacon.beacon_metrics[:0], beacon.beacon_metrics[0+1:]...)
 					}
-					//debugf("%#v\n", beacon.beacon_metrics)
+					debugf("enabled: %s\n", beacon.Beacon_Enabled)
 
 					BEACONS.Beacons[beacon.Beacon_id] = beacon
 
