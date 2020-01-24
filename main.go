@@ -442,7 +442,7 @@ func IncomingMQTTProcessor(updateInterval time.Duration, cl *client.Client, db *
 					// threshold
 
 					if settings.RSSI_enforce_threshold && (int64(incoming.RSSI) < settings.RSSI_min_threshold) {
-						debugf("rejecting rssi incoming %d < %d\n", int64(incoming.RSSI), settings.RSSI_min_threshold)
+						//debugf("rejecting rssi incoming %d < %d\n", int64(incoming.RSSI), settings.RSSI_min_threshold)
 						return
 					}
 
@@ -464,12 +464,12 @@ func IncomingMQTTProcessor(updateInterval time.Duration, cl *client.Client, db *
 					this_metric.rssi = int64(incoming.RSSI)
 					this_metric.location = incoming.Hostname
 					beacon.beacon_metrics = append(beacon.beacon_metrics, this_metric)
-					debugf("APPENDING a metric from %s len %d\n", beacon.Name, len(beacon.beacon_metrics))
+					//debugf("APPENDING a metric from %s len %d\n", beacon.Name, len(beacon.beacon_metrics))
 					if len(beacon.beacon_metrics) > settings.Beacon_metrics_size {
-						debugf("deleting a metric from %s len %d\n", beacon.Name, len(beacon.beacon_metrics))
+						//debugf("deleting a metric from %s len %d\n", beacon.Name, len(beacon.beacon_metrics))
 						beacon.beacon_metrics = append(beacon.beacon_metrics[:0], beacon.beacon_metrics[0+1:]...)
 					}
-					debugf("%#v\n", beacon.beacon_metrics)
+					//debugf("%#v\n", beacon.beacon_metrics)
 
 					BEACONS.Beacons[beacon.Beacon_id] = beacon
 
